@@ -17,7 +17,7 @@ class Store(Storage):
     def add(self, name, count):
         if name in self.__items.keys():
             if self._get_free_space() >= count:
-                print("Товар добавлен")
+                print(f"Товар добавлен {count}")
                 self.__items[name] += count
                 return True
             else:
@@ -88,22 +88,28 @@ class Request:
             self.__from = req_list[4]
             self.__to = None
         elif action == "Привезти":
-            self.__to = req_list[4]
             self.__from = None
+            self.__to = req_list[4]
 
     def move(self):
         if self.__to and self.__from:
-            if eval(self.__to).add(self.__item, self.__count):
-                eval(self.__from).remove(self.__item, self.__count)
-        if self.__to:
-            eval(self.__to).add(self.__item, self.__count)
-        if self.__from:
-            eval(self.__from).remove(self.__item, self.__count)
+            if storages_and_shops[self.__to].add(self.__item, self.__count):
+                storages_and_shops[self.__from].remove(self.__item, self.__count)
+        elif self.__to:
+            storages_and_shops[self.__to].add(self.__item, self.__count)
+        elif self.__from:
+            storages_and_shops[self.__from].remove(self.__item, self.__count)
 
 
-storage_1 = Store(items={"Телефон": 10, "Компьютер": 10, "Телевизор": 10})
-storage_2 = Store(items={"Телефон": 10, "Компьютер": 10, "Приставка": 10})
-shop_1 = Shop(items={"Телефон": 3, "Компьютер": 3, "Телевизор": 3})
+storages_and_shops = {
+    "storage_1": Store(items={"Телефон": 10, "Компьютер": 10, "Телевизор": 10}),
+    "storage_2": Store(items={"Телефон": 10, "Компьютер": 10, "Телевизор": 10}),
+    "shop_1": Shop(items={"Телефон": 3, "Компьютер": 3, "Телевизор": 3})
+}
+
+# storage_1 = Store(items={"Телефон": 10, "Компьютер": 10, "Телевизор": 10})
+# storage_2 = Store(items={"Телефон": 10, "Компьютер": 10, "Приставка": 10})
+# shop_1 = Shop(items={"Телефон": 3, "Компьютер": 3, "Телевизор": 3})
 
 # test_text_1 = "Забрать 3 Телефон на shop_1"
 # test_text_2 = "Доставить 1 Телевизор из storage_1 в shop_1"
